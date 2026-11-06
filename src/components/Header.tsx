@@ -12,7 +12,8 @@ import {
   X,
   LogIn,
   LogOut,
-  Sparkles
+  Sparkles,
+  Users
 } from 'lucide-react';
 import { UserProfile, Role } from '../types';
 
@@ -43,6 +44,9 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'bookings', label: 'Booking Ruang & Laptop', icon: Clock },
     { id: 'agendas', label: 'Agenda & Tema', icon: BookOpen },
     { id: 'recap', label: 'Rekap & Evaluasi', icon: BarChart3 },
+    ...(currentUser?.role === 'admin'
+      ? [{ id: 'users', label: 'Kelola Pengguna', icon: Users }]
+      : []),
   ];
 
   return (
@@ -104,6 +108,19 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     <div className="p-1.5">
+                      {currentUser.role === 'admin' && (
+                        <button
+                          onClick={() => {
+                            setActiveTab('users');
+                            setUserDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-emerald-50 rounded-lg transition-colors text-emerald-950 font-bold cursor-pointer"
+                        >
+                          <Users className="w-3.5 h-3.5 text-emerald-700" />
+                          <span>Kelola Pengguna & Role</span>
+                        </button>
+                      )}
+
                       <button
                         onClick={onOpenLogin}
                         className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-slate-50 rounded-lg transition-colors text-slate-700 font-medium cursor-pointer"

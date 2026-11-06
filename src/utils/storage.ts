@@ -145,6 +145,50 @@ export function authenticateUser(loginId: string, pass: string): { success: bool
   return { success: true, user };
 }
 
+export function updateUserRole(userId: string, newRole: Role): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const index = users.findIndex((u) => u.id === userId);
+  if (index === -1) return { success: false, message: 'Pengguna tidak ditemukan' };
+  
+  users[index].role = newRole;
+  saveStoredUsers(users);
+
+  // Sync current user if affected
+  const currentUser = getStoredCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    saveStoredCurrentUser(users[index]);
+  }
+  return { success: true };
+}
+
+export function updateUserTeam(userId: string, newTeam: TeamName): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const index = users.findIndex((u) => u.id === userId);
+  if (index === -1) return { success: false, message: 'Pengguna tidak ditemukan' };
+  
+  users[index].team = newTeam;
+  saveStoredUsers(users);
+
+  const currentUser = getStoredCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    saveStoredCurrentUser(users[index]);
+  }
+  return { success: true };
+}
+
+export function deleteUserAccount(userId: string): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const target = users.find((u) => u.id === userId);
+  if (!target) return { success: false, message: 'Pengguna tidak ditemukan' };
+  if (target.email === 'firman.maulana1004@gmail.com' || target.id === 'user-admin-1') {
+    return { success: false, message: 'Akun Administrator utama Ustadz Firman tidak dapat dihapus!' };
+  }
+
+  const updated = users.filter((u) => u.id !== userId);
+  saveStoredUsers(updated);
+  return { success: true };
+}
+
 export function getStoredCurrentUser(): UserProfile | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);

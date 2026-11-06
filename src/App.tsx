@@ -24,6 +24,7 @@ import { CalendarView } from './components/CalendarView';
 import { BookingView } from './components/BookingView';
 import { AgendaView } from './components/AgendaView';
 import { RecapView } from './components/RecapView';
+import { UserManagementView } from './components/UserManagementView';
 import { LoginModal } from './components/LoginModal';
 
 export default function App() {
@@ -238,6 +239,10 @@ export default function App() {
             bookings={bookings}
             currentUser={activeUser}
           />
+        )}
+
+        {activeTab === 'users' && currentUser?.role === 'admin' && (
+          <UserManagementView currentUser={currentUser} />
         )}
       </main>
 

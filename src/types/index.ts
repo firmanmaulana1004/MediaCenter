@@ -94,4 +94,5 @@ export interface UserProfile {
   team: TeamName;
   email: string;
   password?: string;
+  registeredAt?: string;
 }
