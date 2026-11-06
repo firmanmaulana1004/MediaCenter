@@ -1,0 +1,6 @@
+{
+  "name": "Cendekia Media Calendar",
+  "description": "Aplikasi manajemen alur kerja karya media, kalender produksi, dan booking ruang media & laptop untuk Sekolah Cendekia BAZNAS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
