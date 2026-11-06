@@ -1,12 +1,11 @@
 export type Role = 'siswa' | 'ketua_tim' | 'admin';
 
 export type TeamName = 
-  | 'Media Inti'
-  | 'Media OSIS'
-  | 'Media Adiwiyata'
-  | 'Pramuka & PMR'
-  | 'Rohis & Keagamaan'
-  | 'Organisasi Lain';
+  | 'OCEANS'
+  | 'ADIWIYATA'
+  | 'ROHIS'
+  | 'MUDABIR'
+  | 'MEDIA CENTER';
 
 export type WorkType = 
   | 'Video'
@@ -94,4 +93,5 @@ export interface UserProfile {
   role: Role;
   team: TeamName;
   email: string;
+  password?: string;
 }

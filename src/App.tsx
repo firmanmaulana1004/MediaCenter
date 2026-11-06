@@ -24,13 +24,15 @@ import { CalendarView } from './components/CalendarView';
 import { BookingView } from './components/BookingView';
 import { AgendaView } from './components/AgendaView';
 import { RecapView } from './components/RecapView';
+import { LoginModal } from './components/LoginModal';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [works, setWorks] = useState<WorkItem[]>([]);
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [agendas, setAgendas] = useState<SchoolAgenda[]>([]);
-  const [currentUser, setCurrentUser] = useState<UserProfile>(getStoredCurrentUser());
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(getStoredCurrentUser());
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // Load initial data from localStorage
   useEffect(() => {
@@ -40,10 +42,16 @@ export default function App() {
     setCurrentUser(getStoredCurrentUser());
   }, []);
 
-  // Sync current user change to storage
-  const handleUserChange = (user: UserProfile) => {
+  // Login handler
+  const handleLoginSuccess = (user: UserProfile) => {
     setCurrentUser(user);
     saveStoredCurrentUser(user);
+  };
+
+  // Logout handler
+  const handleLogout = () => {
+    setCurrentUser(null);
+    saveStoredCurrentUser(null);
   };
 
   // Reset data handler
@@ -52,10 +60,25 @@ export default function App() {
     setWorks(getStoredWorks());
     setBookings(getStoredBookings());
     setAgendas(getStoredAgendas());
+    setCurrentUser(getStoredCurrentUser());
+  };
+
+  // Active user fallback (Guest / Tamu)
+  const activeUser: UserProfile = currentUser || {
+    id: 'guest',
+    name: 'Tamu (Pengunjung)',
+    role: 'siswa',
+    team: 'MEDIA CENTER',
+    email: 'tamu@cendekiabaznas.sch.id',
   };
 
   // Work Handlers
   const handleAddWork = (newWorkData: Omit<WorkItem, 'id' | 'createdAt'>) => {
+    if (!currentUser) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     const newWork: WorkItem = {
       ...newWorkData,
       id: `work-${Date.now()}`,
@@ -73,6 +96,11 @@ export default function App() {
   };
 
   const handleDeleteWork = (id: string) => {
+    // Only Ustadz Firman (admin) can delete
+    if (activeUser.role !== 'admin') {
+      alert('Maaf, hanya Ustadz Firman (Administrator) yang berwenang menghapus karya.');
+      return;
+    }
     const updated = works.filter((w) => w.id !== id);
     setWorks(updated);
     saveStoredWorks(updated);
@@ -82,6 +110,11 @@ export default function App() {
   const handleAddBooking = (
     newBookingData: Omit<BookingItem, 'id' | 'createdAt'>
   ): { success: boolean; message?: string } => {
+    if (!currentUser) {
+      setIsLoginModalOpen(true);
+      return { success: false, message: 'Silakan login terlebih dahulu untuk melakukan pemesanan.' };
+    }
+
     const check = checkBookingConflict(
       {
         bookingDate: newBookingData.bookingDate,
@@ -108,6 +141,11 @@ export default function App() {
   };
 
   const handleCancelBooking = (id: string) => {
+    // Only Ustadz Firman (admin) can delete booking
+    if (activeUser.role !== 'admin') {
+      alert('Maaf, hanya Ustadz Firman (Administrator) yang dapat membatalkan pemesanan fasilitas.');
+      return;
+    }
     const updated = bookings.filter((b) => b.id !== id);
     setBookings(updated);
     saveStoredBookings(updated);
@@ -125,6 +163,10 @@ export default function App() {
   };
 
   const handleDeleteAgenda = (id: string) => {
+    if (activeUser.role !== 'admin') {
+      alert('Hanya Ustadz Firman (Administrator) yang berwenang menghapus agenda.');
+      return;
+    }
     const updated = agendas.filter((a) => a.id !== id);
     setAgendas(updated);
     saveStoredAgendas(updated);
@@ -132,12 +174,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col text-slate-800">
-      {/* Navigation Header with School Logo & Role Switcher */}
+      {/* Navigation Header with School Logo & User Profile / Login */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         currentUser={currentUser}
-        setCurrentUser={handleUserChange}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
+        onLogout={handleLogout}
         onResetData={handleResetData}
       />
 
@@ -149,7 +192,7 @@ export default function App() {
             bookings={bookings}
             agendas={agendas}
             onNavigateTab={setActiveTab}
-            currentUser={currentUser}
+            currentUser={activeUser}
           />
         )}
 
@@ -159,7 +202,7 @@ export default function App() {
             onAddWork={handleAddWork}
             onUpdateWork={handleUpdateWork}
             onDeleteWork={handleDeleteWork}
-            currentUser={currentUser}
+            currentUser={activeUser}
           />
         )}
 
@@ -176,7 +219,7 @@ export default function App() {
             bookings={bookings}
             onAddBooking={handleAddBooking}
             onCancelBooking={handleCancelBooking}
-            currentUser={currentUser}
+            currentUser={activeUser}
           />
         )}
 
@@ -185,7 +228,7 @@ export default function App() {
             agendas={agendas}
             onAddAgenda={handleAddAgenda}
             onDeleteAgenda={handleDeleteAgenda}
-            currentUser={currentUser}
+            currentUser={activeUser}
           />
         )}
 
@@ -193,10 +236,17 @@ export default function App() {
           <RecapView
             works={works}
             bookings={bookings}
-            currentUser={currentUser}
+            currentUser={activeUser}
           />
         )}
       </main>
+
+      {/* User Login & Register Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
 
       {/* Clean School Footer */}
       <footer className="bg-white border-t border-slate-200 mt-12 py-6 text-xs text-slate-500">
@@ -210,7 +260,7 @@ export default function App() {
           <div className="flex items-center gap-4 text-slate-500">
             <span>Kalender Kerja & Fasilitas Santri</span>
             <span>·</span>
-            <span>Desain Bersih & Modern</span>
+            <span>Sistem Autentikasi Pengguna Aktif</span>
           </div>
         </div>
       </footer>

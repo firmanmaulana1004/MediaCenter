@@ -55,12 +55,11 @@ export const RecapView: React.FC<RecapViewProps> = ({
 
   // Team breakdown
   const teams: TeamName[] = [
-    'Media Inti',
-    'Media OSIS',
-    'Media Adiwiyata',
-    'Pramuka & PMR',
-    'Rohis & Keagamaan',
-    'Organisasi Lain',
+    'OCEANS',
+    'ADIWIYATA',
+    'ROHIS',
+    'MUDABIR',
+    'MEDIA CENTER',
   ];
 
   const teamBreakdown = teams.map((team) => {

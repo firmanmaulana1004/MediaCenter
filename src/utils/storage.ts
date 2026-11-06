@@ -2,12 +2,13 @@ import { WorkItem, BookingItem, SchoolAgenda, MonthlyRecap, UserProfile, Role, T
 import { INITIAL_WORKS, INITIAL_BOOKINGS, INITIAL_AGENDAS, INITIAL_RECAP, INITIAL_USER_PROFILES } from '../data/sampleData';
 
 const STORAGE_KEYS = {
-  WORKS: 'cendekia_works_v1',
-  BOOKINGS: 'cendekia_bookings_v1',
-  AGENDAS: 'cendekia_agendas_v1',
-  RECAPS: 'cendekia_recaps_v1',
-  CURRENT_USER: 'cendekia_current_user_v1',
-  SUPABASE_CONFIG: 'cendekia_supabase_config_v1',
+  WORKS: 'cendekia_works_v2',
+  BOOKINGS: 'cendekia_bookings_v2',
+  AGENDAS: 'cendekia_agendas_v2',
+  RECAPS: 'cendekia_recaps_v2',
+  USERS: 'cendekia_users_v2',
+  CURRENT_USER: 'cendekia_current_user_v2',
+  SUPABASE_CONFIG: 'cendekia_supabase_config_v2',
 };
 
 export interface SupabaseConfig {
@@ -93,18 +94,73 @@ export function saveStoredRecap(recap: MonthlyRecap): void {
   }
 }
 
-export function getStoredCurrentUser(): UserProfile {
+export function getStoredUsers(): UserProfile[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USERS);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USER_PROFILES));
+      return INITIAL_USER_PROFILES;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return INITIAL_USER_PROFILES;
+  }
+}
+
+export function saveStoredUsers(users: UserProfile[]): void {
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+}
+
+export function registerNewUser(newUser: UserProfile): { success: boolean; message?: string } {
+  const users = getStoredUsers();
+  const exists = users.some((u) => u.email.toLowerCase() === newUser.email.toLowerCase());
+  if (exists) {
+    return { success: false, message: 'Email tersebut sudah terdaftar di sistem!' };
+  }
+  const updated = [...users, newUser];
+  saveStoredUsers(updated);
+  return { success: true };
+}
+
+export function authenticateUser(loginId: string, pass: string): { success: boolean; user?: UserProfile; message?: string } {
+  const users = getStoredUsers();
+  const cleanId = loginId.trim().toLowerCase();
+  const cleanPass = pass.trim();
+
+  const user = users.find((u) => {
+    const emailMatch = u.email.toLowerCase() === cleanId;
+    const teamMatch = u.team.toLowerCase() === cleanId;
+    const adminAlias = (cleanId === 'admin' || cleanId === 'firman') && u.role === 'admin';
+    return emailMatch || teamMatch || adminAlias;
+  });
+
+  if (!user) {
+    return { success: false, message: 'Akun tidak ditemukan. Gunakan email atau nama organisasi Anda.' };
+  }
+
+  if (user.password && user.password !== cleanPass) {
+    return { success: false, message: 'Kata sandi / PIN yang dimasukkan salah.' };
+  }
+
+  return { success: true, user };
+}
+
+export function getStoredCurrentUser(): UserProfile | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
     if (raw) return JSON.parse(raw);
   } catch {
     // fallback
   }
-  return INITIAL_USER_PROFILES[0]; // Default Humas/Admin
+  return INITIAL_USER_PROFILES[0]; // Default Ustadz Firman
 }
 
-export function saveStoredCurrentUser(user: UserProfile): void {
-  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+export function saveStoredCurrentUser(user: UserProfile | null): void {
+  if (user) {
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+  }
 }
 
 export function getStoredSupabaseConfig(): SupabaseConfig {
@@ -129,6 +185,8 @@ export function resetAllDataToDefault(): void {
   localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(INITIAL_BOOKINGS));
   localStorage.setItem(STORAGE_KEYS.AGENDAS, JSON.stringify(INITIAL_AGENDAS));
   localStorage.setItem(STORAGE_KEYS.RECAPS, JSON.stringify({ '2026-11': INITIAL_RECAP }));
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USER_PROFILES));
+  localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(INITIAL_USER_PROFILES[0]));
 }
 
 /**

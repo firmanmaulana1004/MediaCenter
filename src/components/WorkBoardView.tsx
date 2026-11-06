@@ -45,12 +45,11 @@ const STAGES: { id: WorkStage; label: string; desc: string; color: string }[] = 
 ];
 
 const TEAMS: TeamName[] = [
-  'Media Inti',
-  'Media OSIS',
-  'Media Adiwiyata',
-  'Pramuka & PMR',
-  'Rohis & Keagamaan',
-  'Organisasi Lain',
+  'OCEANS',
+  'ADIWIYATA',
+  'ROHIS',
+  'MUDABIR',
+  'MEDIA CENTER',
 ];
 
 const WORK_TYPES: WorkType[] = ['Video', 'Dokumentasi', 'Podcast', 'Desain', 'Lainnya'];
@@ -103,8 +102,8 @@ export const WorkBoardView: React.FC<WorkBoardViewProps> = ({
     setEditingWork(null);
     setFormTitle('');
     setFormType('Video');
-    setFormTeam(currentUser.team || 'Media Inti');
-    setFormPic(currentUser.name.split(' (')[0]);
+    setFormTeam(currentUser.team || 'MEDIA CENTER');
+    setFormPic(currentUser.role === 'admin' ? 'Ustadz Firman' : currentUser.name.split(' (')[0]);
     setFormStage('Ide');
     setFormProdDate('');
     setFormEditDate('');
@@ -186,10 +185,8 @@ export const WorkBoardView: React.FC<WorkBoardViewProps> = ({
   };
 
   const canEditWork = (work: WorkItem): boolean => {
-    if (currentUser.role === 'admin') return true;
-    if (currentUser.role === 'ketua_tim' && currentUser.team === work.team) return true;
-    if (currentUser.role === 'siswa' && work.stage === 'Ide') return true;
-    return false;
+    // Semua pengguna terdaftar dapat memperbarui detail atau memajukan tahap alur
+    return true;
   };
 
   const handleQuickAdvance = (work: WorkItem) => {
@@ -222,14 +219,18 @@ export const WorkBoardView: React.FC<WorkBoardViewProps> = ({
 
   const getTeamColor = (team: TeamName) => {
     switch (team) {
-      case 'Media Inti':
-        return 'text-emerald-800 bg-emerald-50 border-emerald-200';
-      case 'Media OSIS':
+      case 'OCEANS':
         return 'text-blue-800 bg-blue-50 border-blue-200';
-      case 'Media Adiwiyata':
+      case 'ADIWIYATA':
+        return 'text-emerald-800 bg-emerald-50 border-emerald-200';
+      case 'ROHIS':
+        return 'text-purple-800 bg-purple-50 border-purple-200';
+      case 'MUDABIR':
+        return 'text-amber-800 bg-amber-50 border-amber-200';
+      case 'MEDIA CENTER':
         return 'text-teal-800 bg-teal-50 border-teal-200';
       default:
-        return 'text-purple-800 bg-purple-50 border-purple-200';
+        return 'text-slate-800 bg-slate-50 border-slate-200';
     }
   };
 
@@ -691,7 +692,41 @@ export const WorkBoardView: React.FC<WorkBoardViewProps> = ({
                 />
               </div>
 
-              {/* Jenis & Tim */}
+              {/* Nama Pembuat & Pilihan User / Organisasi */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                <div>
+                  <label className="block font-bold text-emerald-950 mb-1">
+                    Nama Pembuat / Pengusul <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Contoh: Fatih Al-Ghifari / Nama Santri"
+                    value={formPic}
+                    onChange={(e) => setFormPic(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-emerald-600 font-medium text-slate-900"
+                  />
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">Diisi nama lengkap santri / pengusul</span>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-emerald-950 mb-1">
+                    Pilihan User / Organisasi <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={formTeam}
+                    onChange={(e) => setFormTeam(e.target.value as TeamName)}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-emerald-600 font-bold text-emerald-900"
+                  >
+                    {TEAMS.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                  <span className="text-[10px] text-slate-500 mt-0.5 block">OCEANS, ADIWIYATA, ROHIS, MUDABIR, MEDIA CENTER</span>
+                </div>
+              </div>
+
+              {/* Jenis Karya & Tahap Alur */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 mb-1">Jenis Karya</label>
@@ -704,34 +739,6 @@ export const WorkBoardView: React.FC<WorkBoardViewProps> = ({
                       <option key={t} value={t}>{t}</option>
                     ))}
                   </select>
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Tim Media</label>
-                  <select
-                    value={formTeam}
-                    onChange={(e) => setFormTeam(e.target.value as TeamName)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-emerald-600"
-                  >
-                    {TEAMS.map((t) => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Penanggung Jawab & Tahap */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Penanggung Jawab (PJ)</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Nama santri / siswa PJ"
-                    value={formPic}
-                    onChange={(e) => setFormPic(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-emerald-600"
-                  />
                 </div>
 
                 <div>

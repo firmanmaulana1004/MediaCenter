@@ -45,12 +45,11 @@ const FACILITIES: FacilityType[] = [
 ];
 
 const TEAMS: TeamName[] = [
-  'Media Inti',
-  'Media OSIS',
-  'Media Adiwiyata',
-  'Pramuka & PMR',
-  'Rohis & Keagamaan',
-  'Organisasi Lain',
+  'OCEANS',
+  'ADIWIYATA',
+  'ROHIS',
+  'MUDABIR',
+  'MEDIA CENTER',
 ];
 
 const COMMON_EQUIPMENT = [
@@ -263,29 +262,34 @@ export const BookingView: React.FC<BookingViewProps> = ({
             </div>
 
             {/* Tim & Pemohon */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Tim Media</label>
+                <label className="block font-bold text-emerald-950 mb-1">
+                  Pilihan User / Organisasi <span className="text-rose-500">*</span>
+                </label>
                 <select
                   value={formTeam}
                   onChange={(e) => setFormTeam(e.target.value as TeamName)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-emerald-600"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-emerald-600 font-bold text-emerald-900"
                 >
                   {TEAMS.map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">OCEANS, ADIWIYATA, ROHIS, MUDABIR, MEDIA CENTER</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Nama Pemohon</label>
+                <label className="block font-bold text-emerald-950 mb-1">
+                  Nama Pemohon <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Nama santri pemohon"
+                  placeholder="Nama santri / guru pemohon"
                   value={formApplicant}
                   onChange={(e) => setFormApplicant(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-emerald-600"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-emerald-600 font-medium text-slate-900"
                 />
               </div>
             </div>
@@ -429,7 +433,7 @@ export const BookingView: React.FC<BookingViewProps> = ({
               </div>
             ) : (
               filteredBookings.map((b) => {
-                const canCancel = currentUser.role === 'admin' || b.applicantName.includes(currentUser.name.split(' ')[0]);
+                const canCancel = currentUser.role === 'admin';
 
                 return (
                   <div

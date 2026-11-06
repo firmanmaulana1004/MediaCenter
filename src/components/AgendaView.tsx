@@ -21,12 +21,11 @@ interface AgendaViewProps {
 }
 
 const TEAMS: TeamName[] = [
-  'Media Inti',
-  'Media OSIS',
-  'Media Adiwiyata',
-  'Pramuka & PMR',
-  'Rohis & Keagamaan',
-  'Organisasi Lain',
+  'OCEANS',
+  'ADIWIYATA',
+  'ROHIS',
+  'MUDABIR',
+  'MEDIA CENTER',
 ];
 
 export const AgendaView: React.FC<AgendaViewProps> = ({
@@ -45,7 +44,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   const [formDate, setFormDate] = useState('2026-11-10');
   const [formDesc, setFormDesc] = useState('');
   const [formCoverage, setFormCoverage] = useState('Highlight Reels 60 detik & Foto Dokumentasi');
-  const [formTeam, setFormTeam] = useState<TeamName>('Media Inti');
+  const [formTeam, setFormTeam] = useState<TeamName>('MEDIA CENTER');
 
   const filteredAgendas = agendas.filter((a) => a.monthKey === selectedMonth);
   const activeTheme = filteredAgendas[0]?.monthlyTheme || 'Tema Belum Ditentukan';

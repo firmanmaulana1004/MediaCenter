@@ -23,15 +23,14 @@ EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;
 
--- Jenis Tim Media di Sekolah Cendekia BAZNAS
+-- Jenis Organisasi / User di Sekolah Cendekia BAZNAS
 DO $$ BEGIN
     CREATE TYPE media_team AS ENUM (
-        'Media Inti',
-        'Media OSIS',
-        'Media Adiwiyata',
-        'Pramuka & PMR',
-        'Rohis & Keagamaan',
-        'Organisasi Lain'
+        'OCEANS',
+        'ADIWIYATA',
+        'ROHIS',
+        'MUDABIR',
+        'MEDIA CENTER'
     );
 EXCEPTION
     WHEN duplicate_object THEN null;
@@ -75,7 +74,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     full_name TEXT NOT NULL,
     email TEXT NOT NULL,
     role user_role NOT NULL DEFAULT 'siswa',
-    team media_team NOT NULL DEFAULT 'Media Inti',
+    team media_team NOT NULL DEFAULT 'MEDIA CENTER',
     avatar_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
@@ -148,7 +147,7 @@ CREATE TABLE IF NOT EXISTS public.agendas (
     event_date DATE NOT NULL,
     description TEXT,
     target_coverage TEXT,
-    team_in_charge media_team NOT NULL DEFAULT 'Media Inti',
+    team_in_charge media_team NOT NULL DEFAULT 'MEDIA CENTER',
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
@@ -183,7 +182,7 @@ BEGIN
       WHEN NEW.email LIKE '%humas%' OR NEW.email = 'firman.maulana1004@gmail.com' THEN 'admin'::user_role
       ELSE 'siswa'::user_role
     END,
-    'Media Inti'::media_team,
+    'MEDIA CENTER'::media_team,
     NEW.raw_user_meta_data->>'avatar_url'
   );
   RETURN NEW;

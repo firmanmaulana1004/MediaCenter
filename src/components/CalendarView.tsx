@@ -75,16 +75,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
   const getTeamColor = (team: string) => {
     switch (team) {
-      case 'Media Inti':
-        return { bg: 'bg-emerald-100 text-emerald-900 border-emerald-300', dot: 'bg-emerald-600' };
-      case 'Media OSIS':
+      case 'OCEANS':
         return { bg: 'bg-blue-100 text-blue-900 border-blue-300', dot: 'bg-blue-600' };
-      case 'Media Adiwiyata':
-        return { bg: 'bg-teal-100 text-teal-900 border-teal-300', dot: 'bg-teal-600' };
-      case 'Pramuka & PMR':
-        return { bg: 'bg-amber-100 text-amber-900 border-amber-300', dot: 'bg-amber-600' };
-      case 'Rohis & Keagamaan':
+      case 'ADIWIYATA':
+        return { bg: 'bg-emerald-100 text-emerald-900 border-emerald-300', dot: 'bg-emerald-600' };
+      case 'ROHIS':
         return { bg: 'bg-purple-100 text-purple-900 border-purple-300', dot: 'bg-purple-600' };
+      case 'MUDABIR':
+        return { bg: 'bg-amber-100 text-amber-900 border-amber-300', dot: 'bg-amber-600' };
+      case 'MEDIA CENTER':
+        return { bg: 'bg-teal-100 text-teal-900 border-teal-300', dot: 'bg-teal-600' };
       default:
         return { bg: 'bg-slate-100 text-slate-800 border-slate-300', dot: 'bg-slate-600' };
     }
@@ -277,12 +277,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             onChange={(e) => setSelectedTeam(e.target.value)}
             className="px-2.5 py-1 text-xs border border-slate-200 rounded-lg bg-white text-slate-800 focus:outline-emerald-600"
           >
-            <option value="Semua">Semua Tim</option>
-            <option value="Media Inti">Media Inti (Hijau)</option>
-            <option value="Media OSIS">Media OSIS (Biru)</option>
-            <option value="Media Adiwiyata">Media Adiwiyata (Teal)</option>
-            <option value="Pramuka & PMR">Pramuka & PMR (Amber)</option>
-            <option value="Rohis & Keagamaan">Rohis & Keagamaan (Ungu)</option>
+            <option value="Semua">Semua Organisasi</option>
+            <option value="OCEANS">OCEANS (Biru)</option>
+            <option value="ADIWIYATA">ADIWIYATA (Hijau)</option>
+            <option value="ROHIS">ROHIS (Ungu)</option>
+            <option value="MUDABIR">MUDABIR (Amber)</option>
+            <option value="MEDIA CENTER">MEDIA CENTER (Teal)</option>
           </select>
         </div>
       </div>
