@@ -12,10 +12,12 @@ import {
   X,
   LogIn,
   LogOut,
-  Sparkles,
-  Users
+  Users,
+  Link2,
+  Check
 } from 'lucide-react';
 import { UserProfile, Role } from '../types';
+import { SITE_CONFIG } from '../constants/site';
 
 interface HeaderProps {
   activeTab: string;
@@ -36,6 +38,13 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [copiedDomain, setCopiedDomain] = useState(false);
+
+  const handleCopyDomain = () => {
+    navigator.clipboard.writeText(SITE_CONFIG.domain);
+    setCopiedDomain(true);
+    setTimeout(() => setCopiedDomain(false), 2500);
+  };
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -53,10 +62,34 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs">
       {/* Top Banner Bar for Role & Organization Branding */}
       <div className="bg-emerald-950 text-emerald-100 text-xs px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 border-b border-emerald-900">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold tracking-wide text-emerald-300">SEKOLAH CENDEKIA BAZNAS</span>
           <span className="text-emerald-500">·</span>
           <span className="hidden sm:inline text-emerald-200">Manajemen Alur Kerja Media & Fasilitas Studio</span>
+          <span className="text-emerald-600 hidden md:inline">|</span>
+          {/* Domain Sync Badge */}
+          <button
+            onClick={handleCopyDomain}
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-900/80 hover:bg-emerald-800 text-[11px] text-emerald-200 hover:text-white transition-colors cursor-pointer border border-emerald-700/60"
+            title="Klik untuk menyalin tautan resmi aplikasi"
+          >
+            {copiedDomain ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span className="text-emerald-300 font-semibold">Tautan Tersalin!</span>
+              </>
+            ) : (
+              <>
+                <Link2 className="w-3 h-3 text-emerald-400" />
+                <span className="font-mono text-[10.5px] truncate max-w-[190px] sm:max-w-none">
+                  {SITE_CONFIG.domainHost}
+                </span>
+                <span className="text-[9px] bg-emerald-700/70 text-emerald-200 px-1 rounded uppercase font-bold">
+                  Live
+                </span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* User Auth Section */}

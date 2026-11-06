@@ -26,6 +26,7 @@ import { AgendaView } from './components/AgendaView';
 import { RecapView } from './components/RecapView';
 import { UserManagementView } from './components/UserManagementView';
 import { LoginModal } from './components/LoginModal';
+import { SITE_CONFIG } from './constants/site';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -255,17 +256,27 @@ export default function App() {
 
       {/* Clean School Footer */}
       <footer className="bg-white border-t border-slate-200 mt-12 py-6 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-emerald-900">Sekolah Cendekia BAZNAS</span>
-            <span>·</span>
-            <span>Sistem Koordinasi Media & Studio Multimedia</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
+            <span className="font-bold text-emerald-900">{SITE_CONFIG.organization}</span>
+            <span className="hidden sm:inline">·</span>
+            <span>{SITE_CONFIG.name}</span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-500">
-            <span>Kalender Kerja & Fasilitas Santri</span>
-            <span>·</span>
-            <span>Sistem Autentikasi Pengguna Aktif</span>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-slate-500">
+            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="font-semibold text-[11px]">Domain Resmi Tersinkron:</span>
+              <a
+                href={SITE_CONFIG.domain}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] underline hover:text-emerald-900"
+              >
+                {SITE_CONFIG.domainHost}
+              </a>
+            </div>
+            <span className="text-[11px] text-slate-400">Hak Akses: Ustadz Firman (Admin)</span>
           </div>
         </div>
       </footer>
